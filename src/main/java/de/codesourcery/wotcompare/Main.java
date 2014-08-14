@@ -319,7 +319,7 @@ public class Main {
 			final Function<Tank,ValueWithUnit> valueSupplier = tank -> detailsSupplier.apply( tank ).getPropertyValue( property );
 
 			// sort tanks ascending by property value
-			final List<Tank> sortedTanks = filteredTanks.stream().sorted( Comparator.comparing( a -> valueSupplier.apply(a).getValue() ) ).collect( Collectors.toList() );
+			final List<Tank> sortedTanks = (List<Tank>) filteredTanks.stream().sorted( Comparator.comparing( a -> valueSupplier.apply(a).getValue() ) ).collect( Collectors.toList() );
 
 			sortedTanks.stream().forEach( tank ->
 			{
