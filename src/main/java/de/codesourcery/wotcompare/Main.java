@@ -50,7 +50,7 @@ public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException
 	{
-		final File configFile = args.length == 0 ? new File("/home/tobi/.wotcompare") : new File( args[0] );
+		final File configFile = args.length == 0 ? new File(".wotcompare") : new File( args[0] );
 		new Main(configFile).run();
 	}
 
