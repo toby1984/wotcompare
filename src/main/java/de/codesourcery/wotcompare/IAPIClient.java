@@ -21,7 +21,15 @@ public interface IAPIClient {
 
 	public int getMaxTier() throws APIException;
 
-	public Tank getTankByShortName(String name) throws APIException;
+	/**
+	 * Looks up a tank by short name first, attempting to match the long name
+	 * if lookup by shortname fails.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws APIException
+	 */
+	public Tank getTankByShortNameOrName(String name) throws APIException;	
 
 	public void discardCache();
 

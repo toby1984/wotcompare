@@ -250,7 +250,7 @@ public class Main {
 				public Paint getItemFillPaint(int row, int column)
 	            {
 	            	final String tankShortname = (String) getPlot().getDataset().getColumnKey( column );
-	            	return client.getTankByShortName( tankShortname ).getNation().getColor();
+	            	return client.getTankByShortNameOrName( tankShortname ).getNation().getColor();
 	            }
 	        };
 
@@ -266,7 +266,7 @@ public class Main {
 				public String generateToolTip(CategoryDataset dataset, int row,int column)
 				{
 	            	final String tankShortname = (String) dataset.getColumnKey( column );
-	            	final Tank tank = client.getTankByShortName( tankShortname );
+	            	final Tank tank = client.getTankByShortNameOrName( tankShortname );
 	            	final Number value = dataset.getValue( row ,  column );
 					return tank.getName()+" ("+tank.getNation()+") - "+NF.format( value );
 				}
@@ -324,7 +324,8 @@ public class Main {
 			sortedTanks.stream().forEach( tank ->
 			{
 				final ValueWithUnit value = valueSupplier.apply( tank );
-				dataset.addValue( (Number) value.getValue() , property.getUnit().toString() , tank.getShortName() );
+				final String name = tank.isShortNameUnique() ? tank.getShortName() : tank.getName();
+				dataset.addValue( (Number) value.getValue() , property.getUnit().toString() , name );
 			});
 
 			chartPanel.getChart().setTitle( property.toString() );

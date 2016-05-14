@@ -197,7 +197,24 @@ public class SimpleAPIClient implements IAPIClient
 			public List<Tank> process(JSONObject root)
 			{
 				final JSONObject data = root.getJSONObject("data");
-				return (List<Tank>) data.keySet().stream().map( key -> Tank.parse( data.getJSONObject( key.toString() ) ) ).collect(Collectors.toList());
+				@SuppressWarnings("unchecked")
+				final List<Tank> results = (List<Tank>) data.keySet().stream().map( key -> Tank.parse( data.getJSONObject( key.toString() ) ) ).collect(Collectors.toCollection(ArrayList::new));
+				results.removeIf( Tank::isBot );
+				final Map<String,Integer> tankCountsByShortName = new HashMap<>();
+				for ( Tank t : results ) {
+					Integer count = tankCountsByShortName.get(t.getShortName());
+					if ( count == null ) {
+						count = Integer.valueOf(1);
+					} else {
+						count = count + 1;
+					}
+					tankCountsByShortName.put( t.getShortName() , count );
+				}
+				for ( Tank t : results ) 
+				{
+					t.setShortNameUnique( tankCountsByShortName.get(t.getShortName()).intValue() == 1 );
+				}
+				return results;
 			}
 		});
 //		System.out.println("Got "+result.size()+" tanks");
@@ -430,14 +447,28 @@ http(s)://<server>/<API_name>/<method block>/<method name>/?<get params>Where:
 		return getTanks().stream().map( tank -> tank.getTier() ).max( (a,b) -> Integer.compare( a, b ) ).orElseThrow( () -> new RuntimeException("Internal error, no tanks ?"));
 	}
 
+	private Tank getTankByName(String name) throws APIException
+	{
+		final List<Tank> matches = getTanks().stream().filter( tank -> name.equals( tank.getName() ) ).collect( Collectors.toList() );
+		if ( matches.size() == 1 ) {
+			return matches.get(0);
+		}
+		throw new NoSuchElementException("Found "+matches.size()+" tank(s) with name '"+name+"' : "+
+		matches.stream().map( Tank::toString ).collect( Collectors.joining("\n") ) );
+	}
+	
 	@Override
-	public Tank getTankByShortName(String name) throws APIException
+	public Tank getTankByShortNameOrName(String name) throws APIException 
 	{
 		final List<Tank> matches = getTanks().stream().filter( tank -> name.equals( tank.getShortName() ) ).collect( Collectors.toList() );
 		if ( matches.size() == 1 ) {
 			return matches.get(0);
 		}
-		throw new NoSuchElementException("No tank with short name '"+name+"'");
+		if ( matches.isEmpty() ) {
+			return getTankByName(name);
+		}
+		throw new NoSuchElementException("Found "+matches.size()+" tank(s) with short name '"+name+"' : "+
+		matches.stream().map( Tank::toString ).collect( Collectors.joining("\n") ) );
 	}
 
 	@Override

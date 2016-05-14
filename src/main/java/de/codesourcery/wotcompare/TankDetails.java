@@ -59,7 +59,7 @@ public class TankDetails
 		for ( int i = 0 ; i < length ; i++ )
 		{
 			final JSONObject object = json.getJSONObject( i );
-			final boolean isDefault = object.getBoolean("is_default");
+			final boolean isDefault = object.isNull("is_default") ? false : object.getBoolean("is_default");
 			final long moduleId = object.getLong("module_id");
 			final Module m = new Module(new ModuleId(moduleId),type);
 

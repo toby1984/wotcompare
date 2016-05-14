@@ -11,29 +11,51 @@ public class Tank
 	private final int tier;
 	private final boolean isPremium;
 	private final String name;
+	private final String internalName;
 	private final String shortName;
 	private final TankType type;
+	private boolean shortNameUnique;
 
-	private Tank(TankId id, String name, String shortName, TankType type,Nation nation, int tier, boolean isPremium)
+	private Tank(TankId id, String name, String internalName,String shortName, TankType type,Nation nation, int tier, boolean isPremium)
 	{
 		if (StringUtils.isBlank( name) ) {
 			throw new IllegalArgumentException("name must not be NULL/blank");
 		}
 		if (StringUtils.isBlank( shortName ) ) {
-			throw new IllegalArgumentException("name must not be NULL/blank");
+			throw new IllegalArgumentException("shortName must not be NULL/blank");
+		}
+		if (StringUtils.isBlank( internalName ) ) {
+			throw new IllegalArgumentException("internalName must not be NULL/blank");
 		}
 		this.id = id;
 		this.name = name;
 		this.shortName = shortName;
+		this.internalName = internalName;
 		this.type = type;
 		this.nation = nation;
 		this.tier = tier;
 		this.isPremium = isPremium;
 	}
+	
+	public String getShortName() {
+		return shortName;
+	}
+	
+	public boolean isShortNameUnique() {
+		return shortNameUnique;
+	}
+	
+	public void setShortNameUnique(boolean shortNameUnique) {
+		this.shortNameUnique = shortNameUnique;
+	}
+	
+	public String getInternalName() {
+		return internalName;
+	}
 
 	@Override
 	public String toString() {
-		return "ID="+id+",type="+type+" , tier="+tier+", nation="+nation+", name="+name;
+		return "ID="+id+",type="+type+" , tier="+tier+", nation="+nation+", name="+name+",internalName="+internalName+",shortName="+shortName;
 	}
 
 	public static Tank parse(JSONObject data) {
@@ -59,10 +81,15 @@ public class Tank
 		final boolean isPremium = data.getBoolean( "is_premium");
 		// NOT PARSED: type_i18n
 		final String shortName = data.getString("short_name_i18n");
+		final String internalName = data.getString("name");
 		final String name = data.getString("name_i18n");
 		final TankType type = TankType.fromID( data.getString("type") );
 		final long id = data.getLong("tank_id" );
-		return new Tank(new TankId(id), name, shortName, type, nation, tier, isPremium);
+		return new Tank(new TankId(id), name, internalName, shortName, type, nation, tier, isPremium);
+	}
+	
+	public boolean isBot() {
+		return getInternalName().contains("bot");
 	}
 
 	public TankId getId() {
@@ -83,10 +110,6 @@ public class Tank
 
 	public String getName() {
 		return name;
-	}
-
-	public String getShortName() {
-		return shortName;
 	}
 
 	public TankType getType() {

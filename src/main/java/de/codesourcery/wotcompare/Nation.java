@@ -11,7 +11,8 @@ public enum Nation
 	JAPAN("japan",Color.GREEN),
 	UK("uk",Color.WHITE),
 	FRANCE("france",Color.PINK ),
-	CHINA("china",Color.YELLOW);
+	CHINA("china",Color.YELLOW),
+        CZECH("czech",Color.MAGENTA);
 
 	private final String id;
 	private final Color color;
