@@ -5,6 +5,8 @@ This is a tiny proof-of-concept (desktop) application to visually compare attrib
 
 Currently I'm using Swing to render the UI but I might turn this into a webapp when I'm satisfied with the results.
 
+![screenshot](https://github.com/toby1984/wotcompare/blob/master/screenshot.png?raw=true)
+
 Compiling & running
 -------------------
 
